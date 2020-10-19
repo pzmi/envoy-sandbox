@@ -1,0 +1,50 @@
+version: "3.8"
+services:
+
+  server:
+    image: jmalloc/echo-server
+    networks:
+      envoymesh:
+        aliases:
+          - server
+    expose:
+      - "1500"
+    environment:
+      PORT: 1500
+      LOG_HTTP_BODY: "true"
+
+  front-envoy:
+    build:
+      context: .
+      dockerfile: Dockerfile-envoy
+    volumes:
+      # - ./config/basic_bootstrap.yaml:/etc/envoy.yaml
+      # - ./config/static_secret_bootstrap.yaml:/etc/envoy.yaml
+      # - ./config/validation_context_sds_secret_bootstrap.yaml:/etc/envoy.yaml
+      # - ./config/sds_secret_bootstrap.yaml:/etc/envoy.yaml
+      - ./config/lua_with_metadata.yaml:/etc/envoy.yaml
+
+      - ./certs:/etc/certs
+      - ./config:/etc/envoy
+    networks:
+      - envoymesh
+    expose:
+      - "80"
+      - "8001"
+    ports:
+      - "8000:80"
+      - "8001:8001"
+
+  # server:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile-server
+  #   networks:
+  #     envoymesh:
+  #       aliases:
+  #         - server
+  #   expose:
+  #     - "1500"
+
+networks:
+  envoymesh: {}

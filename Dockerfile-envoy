@@ -1,0 +1,4 @@
+FROM envoyproxy/envoy:v1.14-latest
+# FROM envoyproxy/envoy-dev:latest
+
+CMD /usr/local/bin/envoy -c /etc/envoy.yaml --service-cluster proxy --service-node node_1
